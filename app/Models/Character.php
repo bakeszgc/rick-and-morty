@@ -10,4 +10,9 @@ class Character extends Model
         'external_id',
         'name'
     ];
+
+    public function episodes()
+    {
+        return $this->belongsToMany(Episode::class);
+    }
 }
