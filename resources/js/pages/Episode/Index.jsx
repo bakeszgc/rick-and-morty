@@ -31,7 +31,7 @@ export default function Index({ episodes }){
     }
 
     return (
-        <div className="bg-slate-50 py-8 px-2">
+        <div className="py-8 px-2">
             <h1 className="text-center text-2xl font-bold mb-8">Rick & Morty episodes</h1>
 
             <section className="max-w-4xl mx-auto mb-8">
