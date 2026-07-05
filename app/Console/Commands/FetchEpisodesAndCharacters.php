@@ -22,9 +22,11 @@ class FetchEpisodesAndCharacters extends Command
         $url = 'https://rickandmortyapi.com/api/episode';
         $charUrl = 'https://rickandmortyapi.com/api/character/';
         $episodeCounter = 0;
+
+        $this->info('Fetching Rick & Morty episodes and characters...');
         
         while ($url) {
-            $response = Http::get($url)->json();
+            $response = Http::retry(3,200)->get($url)->json();
             $episodes = $response['results'];
             $info = $response['info'];
 
@@ -44,7 +46,7 @@ class FetchEpisodesAndCharacters extends Command
                 // Iterates over the characters appearing in the given episode
                 $characterIds = collect($episode['characters'])->map(fn ($url) => (int) Str::afterLast($url,'/'))->toArray();
 
-                $characters = Http::get($charUrl . implode(',',$characterIds))->json();
+                $characters = Http::retry(3,200)->get($charUrl . implode(',',$characterIds))->json();
 
                 foreach ($characters as $character) {
                     // Creates/updates the character and inserts relationship data in pivot table
