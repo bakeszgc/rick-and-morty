@@ -15,10 +15,10 @@ export default function Episode({episode}) {
                 <td>{episode.name}</td>
                 <td>{episode.air_date}</td>
                 <td>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" className={'transition-all ' + (showCharacters && 'rotate-180')}><path d="m7 6 5 5 5-5"/><path d="m7 13 5 5 5-5"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className={'transition-all ' + (showCharacters && 'rotate-180')}><path d="m7 6 5 5 5-5"/><path d="m7 13 5 5 5-5"/></svg>
                 </td>
             </tr>
-            <tr className={!showCharacters && 'hidden'}>
+            <tr className={!showCharacters ? 'hidden' : ''}>
                 <td colSpan="4">
                     <h2 className="text-xl mb-4">Characters appearing in {episode.episode}</h2>
                     <div className="w-full grid grid-cols-4 gap-4">

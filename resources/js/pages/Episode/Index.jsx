@@ -1,10 +1,17 @@
 import { useState } from "react";
 import Episode from "./Episode.jsx";
+import TableHead from "./TableHead.jsx";
+
+const SORT_BY_INIT = {
+    attrName: 'episode',
+    direction: 'asc'
+};
 
 export default function Index({ episodes }){
     const [search,setSearch] = useState('');
     const [afterDate,setAfterDate] = useState('');
     const [beforeDate,setBeforeDate] = useState('');
+    const [sortBy, setSortBy] = useState(SORT_BY_INIT);    
 
     if (search !== '') {
         episodes = episodes.filter((episode) => episode.name.toLowerCase().includes(search.toLowerCase()));
@@ -18,6 +25,11 @@ export default function Index({ episodes }){
         episodes = episodes.filter((episode) => episode.air_date <= beforeDate);
     }
 
+    const sortedEpisodes = [...episodes].sort((a,b) => {
+        let result = a[sortBy.attrName].localeCompare(b[sortBy.attrName]);
+        return sortBy.direction === 'desc' ? -result : result;
+    });    
+
     function handleSearchChange(e) {
         setSearch(e.target.value);
     }
@@ -28,6 +40,21 @@ export default function Index({ episodes }){
 
     function handleBeforeDateChange(e) {
         setBeforeDate(e.target.value);
+    }
+
+    function handleSortClick(attrName){
+        if (attrName === sortBy.attrName) {
+            const newDir = sortBy.direction === 'asc' ? 'desc' : 'asc';
+            setSortBy({
+                attrName: attrName,
+                direction: newDir
+            });
+        } else {
+            setSortBy({
+                attrName: attrName,
+                direction: 'asc'
+            });
+        }
     }
 
     return (
@@ -57,14 +84,20 @@ export default function Index({ episodes }){
                 <table className="bg-white w-full *:*:*:p-4">
                     <thead className="bg-green-500 font-bold">
                         <tr>
-                            <td>Episode</td>
-                            <td>Title</td>
-                            <td>Air date</td>
+                            <td>
+                                <TableHead attrName="episode" sortBy={sortBy} handleSortClick={handleSortClick}>Episode</TableHead>
+                            </td>
+                            <td>
+                                <TableHead attrName="name" sortBy={sortBy} handleSortClick={handleSortClick}>Title</TableHead>
+                            </td>
+                            <td>
+                                <TableHead attrName="air_date" sortBy={sortBy} handleSortClick={handleSortClick}>Air date</TableHead>
+                            </td>
                             <td></td>
                         </tr>
                     </thead>
                     <tbody>
-                        {episodes.length > 0 ? episodes.map(ep => <Episode episode={ep} key={ep.episode} />) : <tr >
+                        {sortedEpisodes.length > 0 ? sortedEpisodes.map(ep => <Episode episode={ep} key={ep.episode} />) : <tr >
                             <td colSpan="4">
                                 There aren't any episodes matching to your searching criterias.
                             </td>
