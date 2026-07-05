@@ -1,18 +1,23 @@
 import { useState } from "react";
 import Episode from "./Episode.jsx";
 import TableHead from "./TableHead.jsx";
+import PaginationButton from "./PaginationButton.jsx";
 
 const SORT_BY_INIT = {
     attrName: 'episode',
     direction: 'asc'
 };
 
+const EPISODES_PER_PAGE = 10;
+
 export default function Index({ episodes }){
     const [search,setSearch] = useState('');
     const [afterDate,setAfterDate] = useState('');
     const [beforeDate,setBeforeDate] = useState('');
-    const [sortBy, setSortBy] = useState(SORT_BY_INIT);    
+    const [sortBy, setSortBy] = useState(SORT_BY_INIT);
+    const [currentPage, setCurrentPage] = useState(1);
 
+    // Filtering logic
     if (search !== '') {
         episodes = episodes.filter((episode) => episode.name.toLowerCase().includes(search.toLowerCase()));
     }
@@ -25,11 +30,22 @@ export default function Index({ episodes }){
         episodes = episodes.filter((episode) => episode.air_date <= beforeDate);
     }
 
+    // Sorting logic
     const sortedEpisodes = [...episodes].sort((a,b) => {
         let result = a[sortBy.attrName].localeCompare(b[sortBy.attrName]);
         return sortBy.direction === 'desc' ? -result : result;
-    });    
+    });
 
+    // Pagination logic
+    const totalPages = Math.ceil(sortedEpisodes.length / EPISODES_PER_PAGE);
+    if (currentPage > totalPages) {
+        setCurrentPage(totalPages);
+    }
+
+    const sliceStart = (currentPage - 1) * EPISODES_PER_PAGE;
+    const slicedEpisodes = [...sortedEpisodes].slice(sliceStart, sliceStart + EPISODES_PER_PAGE);
+
+    // Handler functions
     function handleSearchChange(e) {
         setSearch(e.target.value);
     }
@@ -61,6 +77,10 @@ export default function Index({ episodes }){
         }
     }
 
+    function handlePaginationButtonClick(changeValue) {
+        setCurrentPage(currentPage + changeValue);
+    }
+
     return (
         <div className="py-8 px-2">
             <h1 className="text-center text-2xl font-bold mb-8">Rick & Morty episodes</h1>
@@ -87,30 +107,37 @@ export default function Index({ episodes }){
                 </div>
             </section>
 
-            <section className="rounded-2xl max-w-4xl mx-auto shadow-xl overflow-hidden">
-                <table className="bg-white w-full *:*:*:p-4">
-                    <thead className="bg-green-500 font-bold">
-                        <tr>
-                            <td>
-                                <TableHead attrName="episode" sortBy={sortBy} handleSortClick={handleSortClick}>Episode</TableHead>
-                            </td>
-                            <td>
-                                <TableHead attrName="name" sortBy={sortBy} handleSortClick={handleSortClick}>Title</TableHead>
-                            </td>
-                            <td>
-                                <TableHead attrName="air_date" sortBy={sortBy} handleSortClick={handleSortClick}>Air date</TableHead>
-                            </td>
-                            <td></td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {sortedEpisodes.length > 0 ? sortedEpisodes.map(ep => <Episode episode={ep} key={ep.episode} />) : <tr >
-                            <td colSpan="4">
-                                There aren't any episodes matching to your searching criterias.
-                            </td>
-                        </tr>}
-                    </tbody>
-                </table>
+            <section className="max-w-4xl mx-auto">
+                <div className="rounded-2xl shadow-xl overflow-hidden mb-4">
+                    <table className="bg-white w-full *:*:*:p-4">
+                        <thead className="bg-green-500 font-bold">
+                            <tr>
+                                <td>
+                                    <TableHead attrName="episode" sortBy={sortBy} handleSortClick={handleSortClick}>Episode</TableHead>
+                                </td>
+                                <td>
+                                    <TableHead attrName="name" sortBy={sortBy} handleSortClick={handleSortClick}>Title</TableHead>
+                                </td>
+                                <td>
+                                    <TableHead attrName="air_date" sortBy={sortBy} handleSortClick={handleSortClick}>Air date</TableHead>
+                                </td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {slicedEpisodes.length > 0 ? slicedEpisodes.map(ep => <Episode episode={ep} key={ep.episode} />) : <tr >
+                                <td colSpan="4">
+                                    There aren't any episodes matching to your searching criterias.
+                                </td>
+                            </tr>}
+                        </tbody>
+                    </table>
+                </div>
+                <div className="flex items-center justify-end gap-2">
+                    <PaginationButton direction="prev" currentPage={currentPage} totalPages={totalPages} handleClick={handlePaginationButtonClick} />
+                    <p>{currentPage + ' / ' + totalPages}</p>
+                    <PaginationButton direction="next" currentPage={currentPage} totalPages={totalPages} handleClick={handlePaginationButtonClick} />
+                </div>
             </section>
         </div>
     );
