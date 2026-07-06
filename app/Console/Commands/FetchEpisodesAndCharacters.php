@@ -48,16 +48,18 @@ class FetchEpisodesAndCharacters extends Command
 
                 $characters = Http::retry(3,200)->get($charUrl . implode(',',$characterIds))->json();
 
-                foreach ($characters as $character) {
-                    // Creates/updates the character and inserts relationship data in pivot table
-                    $currentEpisode->characters()->updateOrCreate(
-                        [
-                            'external_id' => $character['id']
-                        ],
-                        [
-                            'name' => $character['name']
-                        ]
-                    );
+                if (count($characters) > 0) {
+                    foreach ($characters as $character) {
+                        // Creates/updates the character and inserts relationship data in pivot table
+                        $currentEpisode->characters()->updateOrCreate(
+                            [
+                                'external_id' => $character['id']
+                            ],
+                            [
+                                'name' => $character['name']
+                            ]
+                        );
+                    }
                 }
 
                 $episodeCounter++;
