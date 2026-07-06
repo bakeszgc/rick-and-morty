@@ -3,6 +3,9 @@
 use App\Models\Character;
 use App\Models\Episode;
 use Illuminate\Support\Facades\Http;
+use Mockery;
+use Softonic\GraphQL\Client;
+use Softonic\GraphQL\Response;
 
 // test('example', function () {
 //     $response = $this->get('/');
@@ -103,4 +106,115 @@ test('can attach and retrieve characters on an episode', function() {
 
     // Test for retrieving the exact character records
     expect($episode->characters->pluck('id'))->toContain(...$characters->pluck('id'));
+});
+
+test('creates episodes and characters with correct pivot relationships using GraphQL endpoint', function () {
+    // Faking GraphQL client and the response
+    $client = Mockery::mock(Client::class);
+    $response = Mockery::mock(Response::class);
+    $response->shouldReceive('hasErrors')->andReturn(false);
+
+    // Defining sample data that GraphQL would return
+    $response->shouldReceive('getData')->andReturn([
+        'episodes' => [
+            'info' => [
+                'next' => null,
+            ],
+            'results' => [
+                [
+                    'id' => 1,
+                    'name' => 'Pilot',
+                    'air_date' => 'December 2, 2013',
+                    'episode' => 'S01E01',
+                    'characters' => [
+                        [
+                            'id' => 1,
+                            'name' => 'Rick Sanchez',
+                        ],
+                        [
+                            'id' => 2,
+                            'name' => 'Morty Smith',
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ]);
+
+    $client->shouldReceive('query')->once()->andReturn($response);
+    $this->app->instance(Client::class, $client);
+
+    // Command runs
+    $this->artisan('app:fetch-episodes-and-characters-graphql');
+
+    // Testing for the number of episodes and characters saved in the database
+    expect(Episode::count())->toBe(1);
+    expect(Character::count())->toBe(2);
+
+    // Testing for the many-to-many relationship between the Episode and the Character model
+    $firstEpisode = Episode::firstWhere('external_id', 1);
+    expect($firstEpisode->characters)->toHaveCount(2);
+    expect($firstEpisode->characters->pluck('name'))->toContain('Rick Sanchez', 'Morty Smith');
+
+    // Testing for the database has the exact episode record
+    $this->assertDatabaseHas('episodes', [
+        'external_id' => 1,
+        'name' => 'Pilot',
+        'episode' => 'S01E01',
+    ]);
+
+    // Testing for the database has the exact character record
+    $this->assertDatabaseHas('characters', [
+        'external_id' => 1,
+        'name' => 'Rick Sanchez',
+    ]);
+});
+
+test('does not create duplicate episodes when command is executed twice using GraphQL endpoint', function() {
+    // Faking GraphQL client and the response
+    $client = Mockery::mock(Client::class);
+    $response = Mockery::mock(Response::class);
+    $response->shouldReceive('hasErrors')->andReturn(false);
+
+    // Defining sample data that GraphQL would return
+    $response->shouldReceive('getData')->andReturn([
+        'episodes' => [
+            'info' => [
+                'next' => null,
+            ],
+            'results' => [
+                [
+                    'id' => 1,
+                    'name' => 'Pilot',
+                    'air_date' => 'December 2, 2013',
+                    'episode' => 'S01E01',
+                    'characters' => [
+                        [
+                            'id' => 1,
+                            'name' => 'Rick Sanchez',
+                        ],
+                        [
+                            'id' => 2,
+                            'name' => 'Morty Smith',
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ]);
+
+    $client->shouldReceive('query')->twice()->andReturn($response);
+    $this->app->instance(Client::class, $client);
+
+    // Run the command twice
+    $this->artisan('app:fetch-episodes-and-characters-graphql');
+    $this->artisan('app:fetch-episodes-and-characters-graphql');
+
+    // Test for the number of episodes and characters stored in database
+    expect(Episode::count())->toBe(1);
+    expect(Character::count())->toBe(2);
+
+    // Test for pivot table records have not duplicated
+    $episode = Episode::firstWhere('external_id', 1);
+    expect($episode->characters)->toHaveCount(2);
 });
