@@ -10,8 +10,13 @@ export default function EpisodesTable({handleSortClick, sortBy, sortedEpisodes})
 
     // Pagination logic
     const totalPages = Math.ceil(sortedEpisodes.length / EPISODES_PER_PAGE);
+
     if (currentPage > totalPages) {
         setCurrentPage(totalPages);
+    }
+
+    if (currentPage < 1 && totalPages >= 1) {
+        setCurrentPage(1);
     }
 
     const sliceStart = (currentPage - 1) * EPISODES_PER_PAGE;
