@@ -1,0 +1,36 @@
+Projekt és fejlesztői környezet előkészítése - 10 perc
+- Laravel projekt létrehozása és alapkonfiguráció
+- Docker alapú adatbázis beállítása
+- .env konfigurálása
+- Adatbázis migrációk futtatása
+
+Adatmodell megtervezése és megvalósítása - 10 perc
+- REST API response-struktúrájának elemzése
+- Az adatbázis séma (Episode, Character) megtervezése
+- Many-to-many kapcsolat kialakítása
+
+REST API import parancs fejlesztése - 1 óra
+- Epizódok lekérése a REST API-ról
+- Lapozott API-válaszok kezelése
+- Az epizódokhoz tartozó karakterek csoportos lekérése
+- Adatok mentése és frissítése az adatbázisban
+
+Frontend fejlesztése - 5 óra
+- React alapú felhasználói felület kialakítása
+- Epizódlista megjelenítése
+- Karakterlista megjelenítése lenyíló sorokban
+- Szűrés cím és adásdátum alapján
+- Oszlopok szerinti rendezés
+- Lapozás megvalósítása
+
+GraphQL custom command megvalósítása - 2 óra
+- A Softonic GraphQL Client és a Rick & Morty GraphQL dokumentációjának feldolgozása
+- A Rick & Morty GraphQL endpoint integrálása
+- A közös adatmentési logika refaktorálása
+- GraphQL alapú importfolyamat megvalósítása
+
+Tesztek írása - 1 óra
+- Feature tesztek készítése a REST és GraphQL importfolyamathoz
+- Az adatok helyes mentésének ellenőrzése
+- A many-to-many kapcsolatok tesztelése
+- Az import ismételt futtatásakor a duplikációk elkerülésének ellenőrzése
