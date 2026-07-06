@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Softonic\GraphQL\Client;
+use Softonic\GraphQL\ClientBuilder;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,7 +17,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(Client::class, function () {
+            return ClientBuilder::build(
+                'https://rickandmortyapi.com/graphql'
+            );
+        });
     }
 
     /**

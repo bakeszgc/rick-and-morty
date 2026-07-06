@@ -7,21 +7,25 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use RuntimeException;
-use Softonic\GraphQL\ClientBuilder;
+use Softonic\GraphQL\Client;
 use Str;
 
 #[Signature('app:fetch-episodes-and-characters-graphql')]
 #[Description('Command description')]
 class FetchEpisodesAndCharactersGraphQL extends Command
 {
+    public function __construct(
+        private Client $client
+    ) {
+        parent::__construct();
+    }
+
     /**
      * Execute the console command.
      */
     public function handle()
     {
         $this->info('Fetching Rick & Morty episodes and characters...');
-        $url = 'https://rickandmortyapi.com/graphql';
-        $client = ClientBuilder::build($url);
 
         $episodeCounter = 0;
         
@@ -42,7 +46,7 @@ class FetchEpisodesAndCharactersGraphQL extends Command
 
         do {
             $variables = ['page' => $page];
-            $response = $client->query($query,$variables);
+            $response = $this->client->query($query,$variables);
 
             if ($response->hasErrors()) {
                 throw new RuntimeException(
