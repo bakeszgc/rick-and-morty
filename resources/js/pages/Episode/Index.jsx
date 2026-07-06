@@ -1,6 +1,7 @@
 import { useState } from "react";
 import EpisodesTable from "./EpisodesTable.jsx";
 import EpisodesFilters from "./EpisodesFilters.jsx";
+import logo from "../../../../public/pictures/rick-and-morty-logo.png"
 
 const SORT_BY_INIT = {
     attrName: 'episode',
@@ -74,7 +75,8 @@ export default function Index({ episodes }){
 
     return (
         <div className="py-8 px-2">
-            <h1 className="text-center text-2xl font-bold mb-8">Rick & Morty episodes</h1>
+            <img src={logo} alt="Rick & Morty" className="mx-auto" />
+            <h1 className="text-center text-2xl font-bold mb-8">Episodes & Characters</h1>
 
             <EpisodesFilters filterBy={filterBy} handleFilterChange={handleFilterChange} handleSearchResetClick={handleSearchResetClick} />
 
