@@ -49,7 +49,7 @@ php artisan test tests/Feature/FetchEpisodesAndCharactersTest.php
 
 # Felhasznált technológiák
 
-- Laravel 12
+- Laravel 13
 - React
 - Inertia.js
 - Tailwind CSS
