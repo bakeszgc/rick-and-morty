@@ -10,7 +10,7 @@ export default function Episode({episode}) {
     }
 
     function handleClick(){
-        setShowCharacters(!showCharacters);
+        setShowCharacters((oldShowCharacter) => !oldShowCharacter);
     }
 
     return (
