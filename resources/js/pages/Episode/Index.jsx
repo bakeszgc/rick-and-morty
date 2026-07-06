@@ -1,7 +1,4 @@
 import { useState } from "react";
-import Episode from "./Episode.jsx";
-import TableHead from "./TableHead.jsx";
-import PaginationButton from "./PaginationButton.jsx";
 import EpisodesTable from "./EpisodesTable.jsx";
 import EpisodesFilters from "./EpisodesFilters.jsx";
 
@@ -41,25 +38,31 @@ export default function Index({ episodes }){
 
     // Handler functions
     function handleFilterChange(e) {
-        setFilterBy({
-            ...filterBy,
-            [e.target.id]: e.target.value
+        setFilterBy((oldFilterBy) => {
+            return {
+                ...oldFilterBy,
+                [e.target.id]: e.target.value
+            };
         });
     }
 
     function handleSearchResetClick() {
-        setFilterBy({
-            ...filterBy,
-            search: ''
+        setFilterBy((oldFilterBy) => {
+            return {
+                ...oldFilterBy,
+                search: ''
+            };
         });
     }
 
     function handleSortClick(attrName){
         if (attrName === sortBy.attrName) {
-            const newDir = sortBy.direction === 'asc' ? 'desc' : 'asc';
-            setSortBy({
-                attrName: attrName,
-                direction: newDir
+            setSortBy((oldSortBy) => {
+                const newDir = oldSortBy.direction === 'asc' ? 'desc' : 'asc';
+                return {
+                    attrName: attrName,
+                    direction: newDir
+                };
             });
         } else {
             setSortBy({

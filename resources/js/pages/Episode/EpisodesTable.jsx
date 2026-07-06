@@ -23,7 +23,7 @@ export default function EpisodesTable({handleSortClick, sortBy, sortedEpisodes})
     const slicedEpisodes = [...sortedEpisodes].slice(sliceStart, sliceStart + EPISODES_PER_PAGE);
 
     function handlePaginationButtonClick(changeValue) {
-        setCurrentPage(currentPage + changeValue);
+        setCurrentPage((oldCurrentPage) => oldCurrentPage + changeValue);
     }
 
     return (
